@@ -26,13 +26,34 @@ server.use(express.json()) //para poder recibir jsons no tener que convertirlos
 
    //Routers o endpoints 
 server.get('/koders', async(request, response) => {
-    const allKoders = await Koder.find({}) //primero buscamos a todos 
-    response.json({
-        succes:true,
-        data: {
-            koders: allKoders
+    try{
+        const {gender, age} = request.query
+
+        const filters = {}
+
+        if(gender){
+            filters.gender = gender
         }
-    })
+        if(age){
+            filters.age = age
+        }
+
+            console.log(filters);
+
+        const allKoders = await Koder.find(filters) //primero buscamos a todos 
+        response.json({
+            succes:true,
+            data: {
+                koders: allKoders
+            }
+        })
+    }catch(error){
+        response.status(400).json({ //400, error del cliente
+            succes: false, 
+            message: error.message
+        }) 
+   
+    }
 })
 
 //POST /koders
